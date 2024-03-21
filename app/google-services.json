@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "635082474618",
+    "firebase_url": "https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "rob-ca2",
+    "storage_bucket": "rob-ca2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635082474618:android:b199f110640db49ac3e7c3",
+        "android_client_info": {
+          "package_name": "com.example.assignment4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwsIYQvkTOaiJ_PmypXfnhcX7kGQLgFLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635082474618:android:86fc3985c60ee7f4c3e7c3",
+        "android_client_info": {
+          "package_name": "com.example.ca2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwsIYQvkTOaiJ_PmypXfnhcX7kGQLgFLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:635082474618:android:bb76216b89264a28c3e7c3",
+        "android_client_info": {
+          "package_name": "com.example.ca3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwsIYQvkTOaiJ_PmypXfnhcX7kGQLgFLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
