@@ -22,6 +22,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.assignment4.admin.BottomNavigationAdmin;
+import com.example.assignment4.entity.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -97,10 +99,11 @@ public class Login extends AppCompatActivity {
                         isAdmin = adminSnapshot.getValue(Boolean.class);
                         if (isAdmin) {
                             Toast.makeText(Login.this, "Admin.", Toast.LENGTH_SHORT).show();
-                        /*Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), BottomNavigationAdmin.class);
+                        intent.putExtra("EMAIL", dataSnapshot.getKey().toString());
                         startActivity(intent);
                         finish();
-                        return;*/
+                        return;
                         } else {
                             Toast.makeText(Login.this, "Not Admin.", Toast.LENGTH_SHORT).show();
                         /*Intent intent = new Intent(getApplicationContext(), FragmentHome.class);
