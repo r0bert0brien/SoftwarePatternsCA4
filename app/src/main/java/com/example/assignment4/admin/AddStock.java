@@ -79,6 +79,7 @@
                     DatabaseReference newProductRef = databaseReference.child("product").push();
                     newProductRef.setValue(new Product(newProductRef.getKey(),title.getText().toString().trim(),
                             manufacturer.getText().toString().trim(), price.getText().toString().trim(), category.getText().toString().trim(), String.valueOf(downloadUrl)));
+                    clearAllFields();
                 }
             });
 
@@ -103,6 +104,14 @@
             return view;
         }
 
+        public void clearAllFields(){
+            downloadUrl = "";
+            title.setText("");
+            manufacturer.setText("");
+            price.setText("");
+            category.setText("");
+        }
+
         private void populateCategorySuggestions(){
             databaseReference.child("product").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -115,7 +124,6 @@
                                 productCategories.add(potentialCategory);
                             }
                         }
-                        Log.d(TAG, "Finished Populating Array: " + productCategories.size());
                     }
                 }
                 @Override

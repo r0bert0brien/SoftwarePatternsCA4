@@ -7,6 +7,19 @@ public class Product {
     String manufacturer;
     String price;
     String category;
+    String image;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "key='" + key + '\'' +
+                ", title='" + title + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", price='" + price + '\'' +
+                ", category='" + category + '\'' +
+                ", image='" + image + '\'' +
+                '}';
+    }
 
     public Product(String key, String title, String manufacturer, String price, String category, String image) {
         this.key = key;
@@ -15,6 +28,10 @@ public class Product {
         this.price = price;
         this.category = category;
         this.image = image;
+    }
+
+    public Product(){
+        // Required empty public constructor
     }
 
     public String getKey() {
@@ -64,6 +81,4 @@ public class Product {
     public void setImage(String image) {
         this.image = image;
     }
-
-    String image;
 }

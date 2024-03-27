@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.assignment4.admin.BottomNavigationAdmin;
+import com.example.assignment4.customer.BottomNavigationCustomer;
 import com.example.assignment4.entity.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -106,11 +107,11 @@ public class Login extends AppCompatActivity {
                         return;
                         } else {
                             Toast.makeText(Login.this, "Not Admin.", Toast.LENGTH_SHORT).show();
-                        /*Intent intent = new Intent(getApplicationContext(), FragmentHome.class);
-                        intent.putExtra("PHONE_NUMBER", phoneNumber);
-                        startActivity(intent);
-                        finish();
-                        return;*/
+                        Intent intent = new Intent(getApplicationContext(), BottomNavigationCustomer.class);
+                            intent.putExtra("EMAIL", dataSnapshot.getKey().toString());
+                            startActivity(intent);
+                            finish();
+                            return;
                         }
                     }
                 } else {
