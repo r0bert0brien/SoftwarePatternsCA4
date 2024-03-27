@@ -34,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProductBrowse extends Fragment {
@@ -72,7 +74,7 @@ public class ProductBrowse extends Fragment {
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext());
+        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -89,6 +91,19 @@ public class ProductBrowse extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, paymentMethods);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortBy.setAdapter(adapter);
+
+        sortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = (String) parent.getItemAtPosition(position);
+                sortResults(selectedOption);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -156,4 +171,42 @@ public class ProductBrowse extends Fragment {
             }
         });
     }
+
+    private void sortResults(String selectedOption) {
+        if (selectedOption.equals("Title - Descending")) {
+            Collections.sort(searchResults, new Comparator<Product>() {
+                @Override
+                public int compare(Product p1, Product p2) {
+                    return p1.getTitle().compareToIgnoreCase(p2.getTitle());
+                }
+            });
+        } else if (selectedOption.equals("Title - Ascending")) {
+            Collections.sort(searchResults, new Comparator<Product>() {
+                @Override
+                public int compare(Product p1, Product p2) {
+                    return p2.getTitle().compareToIgnoreCase(p1.getTitle());
+                }
+            });
+        } else if (selectedOption.equals("Price - Descending")) {
+            Collections.sort(searchResults, new Comparator<Product>() {
+                @Override
+                public int compare(Product p1, Product p2) {
+                    double price1 = Double.parseDouble(p1.getPrice());
+                    double price2 = Double.parseDouble(p2.getPrice());
+                    return Double.compare(price2, price1);
+                }
+            });
+        } else if (selectedOption.equals("Price - Ascending")) {
+            Collections.sort(searchResults, new Comparator<Product>() {
+                @Override
+                public int compare(Product p1, Product p2) {
+                    double price1 = Double.parseDouble(p1.getPrice());
+                    double price2 = Double.parseDouble(p2.getPrice());
+                    return Double.compare(price1, price2);
+                }
+            });
+        }
+        productAdapter.notifyDataSetChanged();
+    }
+
 }
