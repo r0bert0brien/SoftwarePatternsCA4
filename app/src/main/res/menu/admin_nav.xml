@@ -3,4 +3,8 @@
         android:id="@+id/navigation_add_stock"
         android:icon="@drawable/add_stock"
         android:title="Add Stock"/>
+    <item
+        android:id="@+id/navigation_product_maintenance"
+        android:icon="@drawable/product_maintenance"
+        android:title="Product Maintenance"/>
 </menu>

@@ -13,14 +13,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class BottomNavigationCustomer extends AppCompatActivity {
 
     private ProductBrowse productBrowse;
+    private ViewCart viewCart;
     String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bottom_nav_admin);
+        setContentView(R.layout.bottom_nav_customer);
         email = getIntent().getStringExtra("EMAIL");
         productBrowse = new ProductBrowse(email);
+        viewCart = new ViewCart(email);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -35,11 +37,11 @@ public class BottomNavigationCustomer extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     Fragment selectedFragment = null;
 
-                    if (item.getItemId() == R.id.navigation_add_stock) {
+                    if (item.getItemId() == R.id.product_browse) {
                         selectedFragment = productBrowse;
-                    } /* if (item.getItemId() == R.id.navigation_my_notifications) {
-                        selectedFragment = notifcationsFragment;
-                    } else if (item.getItemId() == R.id.navigation_view_profile) {
+                    } else if (item.getItemId() == R.id.view_cart) {
+                        selectedFragment = viewCart;
+                    } /*else if (item.getItemId() == R.id.navigation_view_profile) {
                         selectedFragment = profileFragment;
                     }*/
 

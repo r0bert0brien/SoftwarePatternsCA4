@@ -104,14 +104,12 @@ public class Login extends AppCompatActivity {
                         intent.putExtra("EMAIL", dataSnapshot.getKey().toString());
                         startActivity(intent);
                         finish();
-                        return;
                         } else {
                             Toast.makeText(Login.this, "Not Admin.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), BottomNavigationCustomer.class);
                             intent.putExtra("EMAIL", dataSnapshot.getKey().toString());
                             startActivity(intent);
                             finish();
-                            return;
                         }
                     }
                 } else {

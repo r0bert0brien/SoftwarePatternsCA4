@@ -8,6 +8,7 @@ public class Product {
     String price;
     String category;
     String image;
+    int stock;
 
     @Override
     public String toString() {
@@ -21,13 +22,14 @@ public class Product {
                 '}';
     }
 
-    public Product(String key, String title, String manufacturer, String price, String category, String image) {
+    public Product(String key, String title, String manufacturer, String price, String category, String image, int Stock) {
         this.key = key;
         this.title = title;
         this.manufacturer = manufacturer;
         this.price = price;
         this.category = category;
         this.image = image;
+        this.stock = stock;
     }
 
     public Product(){
@@ -80,5 +82,12 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.assignment4.customer;
+package com.example.assignment4.admin;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
@@ -18,7 +18,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
+import com.example.assignment4.admin.ProductAdapterAdmin;
 import com.example.assignment4.R;
+import com.example.assignment4.customer.ProductAdapter;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdateListener {
+public class ProductBrowseAdmin extends Fragment  implements ProductAdapter.CartUpdateListener{
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
     String email;
@@ -41,16 +43,18 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
     Spinner sortBy;
     RecyclerView recyclerView;
     ProductAdapter productAdapter;
+    ProductAdapterAdmin productAdapterAdmin;
     ArrayAdapter arrayAdapter;
     ArrayList<String> searchField = new ArrayList<>();
     ArrayList<Product> searchResults = new ArrayList<>();
 
-    public ProductBrowse(){
+    public ProductBrowseAdmin(){
         // Required empty public constructor
     }
 
-    public ProductBrowse(String email){
+    public ProductBrowseAdmin(String email, Boolean isAdmin){
         this.email = email;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -68,8 +72,8 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, this);
-        recyclerView.setAdapter(productAdapter);
+        productAdapterAdmin = new ProductAdapterAdmin(new ArrayList<>(), requireContext(), email, this);
+        recyclerView.setAdapter(productAdapterAdmin);
 
         arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, searchField);
         searchBar.setAdapter(arrayAdapter);
@@ -121,8 +125,8 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
                                 }
                             }
 
-                            productAdapter.setProducts(searchResults);
-                            productAdapter.notifyDataSetChanged();
+                            productAdapterAdmin.setProducts(searchResults);
+                            productAdapterAdmin.notifyDataSetChanged();
                         }
                     }
                     @Override
@@ -198,7 +202,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
                 }
             });
         }
-        productAdapter.notifyDataSetChanged();
+        productAdapterAdmin.notifyDataSetChanged();
     }
 
     @Override

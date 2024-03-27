@@ -9,10 +9,12 @@ import android.view.MenuItem;
 
 import com.example.assignment4.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class BottomNavigationAdmin extends AppCompatActivity {
-
     private AddStock addStock;
+    private ProductBrowseAdmin productBrowseAdmin;
     String email;
 
     @Override
@@ -21,6 +23,8 @@ public class BottomNavigationAdmin extends AppCompatActivity {
         setContentView(R.layout.bottom_nav_admin);
         email = getIntent().getStringExtra("EMAIL");
         addStock = new AddStock(email);
+        productBrowseAdmin = new ProductBrowseAdmin(email,true);
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -37,9 +41,9 @@ public class BottomNavigationAdmin extends AppCompatActivity {
 
                     if (item.getItemId() == R.id.navigation_add_stock) {
                         selectedFragment = addStock;
-                    } /* if (item.getItemId() == R.id.navigation_my_notifications) {
-                        selectedFragment = notifcationsFragment;
-                    } else if (item.getItemId() == R.id.navigation_view_profile) {
+                    } if (item.getItemId() == R.id.navigation_product_maintenance) {
+                        selectedFragment = productBrowseAdmin;
+                    } /*else if (item.getItemId() == R.id.navigation_view_profile) {
                         selectedFragment = profileFragment;
                     }*/
 

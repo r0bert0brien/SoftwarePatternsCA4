@@ -78,7 +78,7 @@
                 public void onClick(View v) {
                     DatabaseReference newProductRef = databaseReference.child("product").push();
                     newProductRef.setValue(new Product(newProductRef.getKey(),title.getText().toString().trim(),
-                            manufacturer.getText().toString().trim(), price.getText().toString().trim(), category.getText().toString().trim(), String.valueOf(downloadUrl)));
+                            manufacturer.getText().toString().trim(), price.getText().toString().trim(), category.getText().toString().trim(), String.valueOf(downloadUrl), 0));
                     clearAllFields();
                 }
             });

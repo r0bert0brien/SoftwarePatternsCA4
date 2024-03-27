@@ -4,5 +4,8 @@
         android:id="@+id/product_browse"
         android:icon="@drawable/search"
         android:title="Product Browse"/>
-
+    <item
+        android:id="@+id/view_cart"
+        android:icon="@drawable/shopping_cart"
+        android:title="View Cart"/>
 </menu>
