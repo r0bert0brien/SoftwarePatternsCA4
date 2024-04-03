@@ -12,9 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.assignment4.Login;
 import com.example.assignment4.R;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
@@ -86,8 +92,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             TextView title = dialog.findViewById(R.id.productTitle);
             TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
             TextView price = dialog.findViewById(R.id.productPrice);
+            Button increment = dialog.findViewById(R.id.incrementButton);
+            Button decrement = dialog.findViewById(R.id.decrementButton);
+            TextView quantity = dialog.findViewById(R.id.quantityTextView);
             Button addToCart = dialog.findViewById(R.id.addToCart);
             RatingBar rating = dialog.findViewById(R.id.productRating);
+
+            increment.setOnClickListener(v1 -> {
+                int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
+                quantityAmount++;
+                if (quantityAmount <= product.getStock()){
+                    quantity.setText(String.valueOf(quantityAmount));
+                }
+            });
+
+            decrement.setOnClickListener(v1 -> {
+                int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
+                quantityAmount--;
+                if(quantityAmount >= 1) {
+                    quantity.setText(String.valueOf(quantityAmount));
+                }else{
+                    quantityAmount = 1;
+                }
+            });
 
             //For Rating Functionality
             /*databaseReference.child("product").child(product.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -108,15 +135,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             price.setText("€" + product.getPrice());
             if(holder.inCart) {
                 addToCart.setText("Remove From Cart");
+                increment.setVisibility(View.GONE);
+                decrement.setVisibility(View.GONE);
+                quantity.setVisibility(View.GONE);
             }else{
                 addToCart.setText("Add To Cart");
+                increment.setVisibility(View.VISIBLE);
+                decrement.setVisibility(View.VISIBLE);
+                quantity.setVisibility(View.VISIBLE);
             }
 
             addToCart.setOnClickListener(v1 -> {
                 if(!holder.inCart){
+                    if (Integer.parseInt(String.valueOf(quantity.getText())) > product.getStock()){
+                        Toast.makeText(context, "Error, maximum quantity exceeded - max quantity is: " + String.valueOf(product.getStock()), Toast.LENGTH_SHORT).show();
+                    }else{
                     addToCart.setText("Remove From Cart");
+                    product.setStock(Integer.parseInt(String.valueOf(quantity.getText())));
                     databaseReference.child("users").child(email).child("shoppingCart").push().setValue(product);
                     holder.inCart = true;
+                    increment.setVisibility(View.GONE);
+                    decrement.setVisibility(View.GONE);
+                    quantity.setVisibility(View.GONE);
+                }
                 }else {
                     addToCart.setText("Add To Cart");
                     databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {

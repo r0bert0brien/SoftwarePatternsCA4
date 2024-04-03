@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.assignment4.R;
+import com.example.assignment4.entity.Order;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,7 +22,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListener {
 
@@ -28,6 +32,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
     String email;
     ProductAdapter productAdapter;
     RecyclerView recyclerView;
+    Button checkoutButton;
     ArrayList<Product> cart = new ArrayList<Product>();
 
     public ViewCart(){
@@ -49,6 +54,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
         View view = inflater.inflate(R.layout.fragment_view_cart, container, false);
         cart.clear();
         recyclerView = view.findViewById(R.id.recyclerView);
+        checkoutButton = view.findViewById(R.id.checkoutButton);
         productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, this);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -71,7 +77,39 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
             }
         });
 
+        checkoutButton.setOnClickListener(v -> {
+            for(Product product : cart){
+                databaseReference.child("product").child(product.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int stock = snapshot.child("stock").getValue(Integer.class);
+                        int subtotal = Integer.parseInt(product.getPrice())*product.getStock();
+                        Log.d(TAG, "Ordered Quantity: "+String.valueOf(stock));
+                        stock = stock - 1;
+                        databaseReference.child("product").child(product.getKey()).child("stock").setValue(stock);
+                        databaseReference.child("users").child(email).child("orders").push().setValue(new Order(cart, email, getCurrentDateTime(), String.valueOf(subtotal)));
+                        databaseReference.child("users").child(email).child("shoppingCart").removeValue();
+                        cart.clear();
+                        productAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
+
         return view;
+    }
+
+    public static String getCurrentDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date now = new Date();
+        String formattedDateTime = sdf.format(now);
+
+        return formattedDateTime;
     }
 
     @Override
