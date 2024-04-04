@@ -24,9 +24,11 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrdersView
     private List<Order> orderList;
     private Context context;
     String email;
-    public OrdersAdapter(List<Order> productList, Context context, String email) {
+    Boolean isAdmin;
+    public OrdersAdapter(List<Order> productList, Context context, String email, Boolean isAdmin) {
         this.orderList = productList;
         this.context = context;
+        this.isAdmin = isAdmin;
         this.email = email;
     }
 
@@ -50,7 +52,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrdersView
             TextView orderDate = dialog.findViewById(R.id.orderDate);
             TextView orderSubtotal = dialog.findViewById(R.id.orderSubtotal);
 
-            ProductAdapter productAdapter = new ProductAdapter(order.getProducts(), context, order.getUserEmail(), null);
+            ProductAdapter productAdapter = new ProductAdapter(order.getProducts(), context, order.getUserEmail(), isAdmin, null);
             RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(productAdapter);

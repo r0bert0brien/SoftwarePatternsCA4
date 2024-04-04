@@ -7,4 +7,8 @@
         android:id="@+id/navigation_product_maintenance"
         android:icon="@drawable/product_maintenance"
         android:title="Product Maintenance"/>
+    <item
+        android:id="@+id/navigation_customer_search"
+        android:icon="@drawable/customer_search"
+        android:title="Customer Search"/>
 </menu>

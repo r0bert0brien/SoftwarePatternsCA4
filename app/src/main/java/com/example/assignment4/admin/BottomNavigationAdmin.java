@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class BottomNavigationAdmin extends AppCompatActivity {
     private AddStock addStock;
     private ProductBrowseAdmin productBrowseAdmin;
+    private CustomerSearch customerSearch;
     String email;
 
     @Override
@@ -24,7 +25,7 @@ public class BottomNavigationAdmin extends AppCompatActivity {
         email = getIntent().getStringExtra("EMAIL");
         addStock = new AddStock(email);
         productBrowseAdmin = new ProductBrowseAdmin(email,true);
-
+        customerSearch = new CustomerSearch(email);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -43,9 +44,9 @@ public class BottomNavigationAdmin extends AppCompatActivity {
                         selectedFragment = addStock;
                     } if (item.getItemId() == R.id.navigation_product_maintenance) {
                         selectedFragment = productBrowseAdmin;
-                    } /*else if (item.getItemId() == R.id.navigation_view_profile) {
-                        selectedFragment = profileFragment;
-                    }*/
+                    } else if (item.getItemId() == R.id.navigation_customer_search) {
+                        selectedFragment = customerSearch;
+                    }
 
                     if (selectedFragment != null) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

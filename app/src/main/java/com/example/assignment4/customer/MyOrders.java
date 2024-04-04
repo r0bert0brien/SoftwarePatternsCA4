@@ -59,7 +59,7 @@ public class MyOrders extends Fragment {
         orders.clear();
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
-        ordersAdapter = new OrdersAdapter(new ArrayList<>(), requireContext(), email);
+        ordersAdapter = new OrdersAdapter(new ArrayList<>(), requireContext(), email, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(ordersAdapter);
 

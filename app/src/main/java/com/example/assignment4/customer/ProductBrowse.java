@@ -69,7 +69,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, this);
+        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
         recyclerView.setAdapter(productAdapter);
 
         arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, searchField);

@@ -5,9 +5,14 @@ public class User {
     Boolean isAdmin;
     public User(String name, String email, String address, String paymentMethod, Boolean isAdmin) {
         this.name = name;
+        this.email = email;
         this.address = address;
         this.paymentMethod = paymentMethod;
         this.isAdmin = isAdmin;
+    }
+
+    public User(){
+        // Required empty public constructor
     }
 
     public String getName() {

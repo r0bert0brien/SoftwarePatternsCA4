@@ -58,7 +58,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
         populateCart();
         recyclerView = view.findViewById(R.id.recyclerView);
         checkoutButton = view.findViewById(R.id.checkoutButton);
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, this);
+        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         productAdapter.setProducts(cart);

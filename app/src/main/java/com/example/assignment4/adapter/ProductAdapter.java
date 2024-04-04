@@ -42,11 +42,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private Context context;
     String email;
     private CartUpdateListener cartUpdateListener;
+    Boolean isAdmin;
 
-    public ProductAdapter(List<Product> productList, Context context, String email, CartUpdateListener cartUpdateListener) {
+    public ProductAdapter(List<Product> productList, Context context, String email, Boolean isAdmin, CartUpdateListener cartUpdateListener) {
         this.productList = productList;
         this.context = context;
         this.email = email;
+        this.isAdmin = isAdmin;
         this.cartUpdateListener = cartUpdateListener;
     }
 
@@ -108,10 +110,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             RatingBar rating = dialog.findViewById(R.id.productRating);
             EditText comments = dialog.findViewById(R.id.commentField);
             Button submitReview = dialog.findViewById(R.id.submitReview);
-
+            Log.d(TAG, "isAdmin status: " + isAdmin.toString());
             populateReviews(product, reviews, rating, reviewAdapter);
 
-            if (cartUpdateListener == null){
+            if (cartUpdateListener == null && !isAdmin){
                 addToCart.setVisibility(View.GONE);
                 increment.setVisibility(View.GONE);
                 decrement.setVisibility(View.GONE);
@@ -120,8 +122,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 rating.setIsIndicator(false);
                 rating.setFocusable(true);
             }else {
-                if(holder.inCart) {
-                    addToCart.setText("Remove From Cart");
+                if(holder.inCart || isAdmin) {
+                    if(!isAdmin){
+                        addToCart.setText("Remove From Cart");
+                    }
                     increment.setVisibility(View.GONE);
                     decrement.setVisibility(View.GONE);
                     quantity.setVisibility(View.GONE);
@@ -131,8 +135,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                     decrement.setVisibility(View.VISIBLE);
                     quantity.setVisibility(View.VISIBLE);
                 }
-
-
 
                 increment.setOnClickListener(v1 -> {
                     int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
@@ -219,8 +221,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 reviews.clear();
                 for (DataSnapshot dataSnapshot  : snapshot.getChildren()){
                     Review review = dataSnapshot.getValue(Review.class);
-                    if(review.getEmail().equals(email)){
-                        Log.d(TAG, "Review Email: " + review.getEmail() + " User Email: " + email);
+                    if(review.getEmail().equals(email) && !isAdmin){
+                        Log.d(TAG, "Review Email: " + review.getEmail() + " User Email: " + email + "isAdmin Status: " + isAdmin.toString());
                         rating.setClickable(false);
                         rating.setIsIndicator(true);
                         rating.setFocusable(false);
