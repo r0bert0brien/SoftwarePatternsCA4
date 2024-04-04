@@ -30,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +67,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.title.setText(product.getTitle());
         holder.manufacturer.setText(product.getManufacturer());
         holder.price.setText("€" + product.getPrice());
+        holder.size.setText("Size: " + product.getSize());
         Picasso.get().load(product.getImage()).into(holder.imageView);
 
         databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -102,6 +105,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             ImageView imageView = dialog.findViewById(R.id.productImage);
             TextView title = dialog.findViewById(R.id.productTitle);
             TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
+            TextView size = dialog.findViewById(R.id.productSize);
             TextView price = dialog.findViewById(R.id.productPrice);
             Button increment = dialog.findViewById(R.id.incrementButton);
             Button decrement = dialog.findViewById(R.id.decrementButton);
@@ -173,6 +177,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             title.setText(product.getTitle());
             manufacturer.setText(product.getManufacturer());
             price.setText("€" + product.getPrice());
+            Log.d(TAG, product.getSize());
+            size.setText("Size:  d" + product.getSize().toString());
 
             addToCart.setOnClickListener(v1 -> {
                 if(!holder.inCart){
@@ -257,13 +263,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public class ProductViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
-        TextView title, manufacturer, price;
+        TextView title, manufacturer, price, size;
         Boolean inCart = false;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
             title = itemView.findViewById(R.id.title);
+            size = itemView.findViewById(R.id.text_size);
             manufacturer = itemView.findViewById(R.id.text_manufacturer);
             price = itemView.findViewById(R.id.text_price);
         }

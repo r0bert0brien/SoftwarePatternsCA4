@@ -65,6 +65,7 @@ public class ProductAdapterAdmin extends RecyclerView.Adapter<ProductAdapterAdmi
             dialog.setContentView(R.layout.dialog_view_product_admin);
             ImageView imageView = dialog.findViewById(R.id.productImage);
             TextView title = dialog.findViewById(R.id.productTitle);
+            TextView size = dialog.findViewById(R.id.size);
             TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
             EditText price = dialog.findViewById(R.id.productPrice);
             EditText stock = dialog.findViewById(R.id.productStock);
@@ -84,6 +85,7 @@ public class ProductAdapterAdmin extends RecyclerView.Adapter<ProductAdapterAdmi
             title.setText(product.getTitle());
             manufacturer.setText(product.getManufacturer());
             price.setText("€" + product.getPrice());
+            size.setText("Size: " + size);
             stock.setText(String.valueOf(product.getStock()));
 
             save.setOnClickListener(v1 -> {
@@ -91,6 +93,7 @@ public class ProductAdapterAdmin extends RecyclerView.Adapter<ProductAdapterAdmi
                 product.setStock(Integer.parseInt(String.valueOf(stock.getText())));
                 databaseReference.child("product").child(product.getKey()).setValue(product);
                 notifyItemChanged(position);
+                dialog.dismiss();
             });
             dialog.show();
         });

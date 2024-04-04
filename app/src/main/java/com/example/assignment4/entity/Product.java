@@ -6,34 +6,20 @@ public class Product {
     String title;
     String manufacturer;
     String price;
+    String size;
     String category;
     String image;
     int stock;
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "key='" + key + '\'' +
-                ", title='" + title + '\'' +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", price='" + price + '\'' +
-                ", category='" + category + '\'' +
-                ", image='" + image + '\'' +
-                '}';
-    }
-
-    public Product(String key, String title, String manufacturer, String price, String category, String image, int Stock) {
+    public Product(String key, String title, String manufacturer, String price, String size, String category, String image, int stock) {
         this.key = key;
         this.title = title;
         this.manufacturer = manufacturer;
         this.price = price;
+        this.size = size;
         this.category = category;
         this.image = image;
         this.stock = stock;
-    }
-
-    public Product(){
-        // Required empty public constructor
     }
 
     public String getKey() {
@@ -68,6 +54,14 @@ public class Product {
         this.price = price;
     }
 
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -83,6 +77,7 @@ public class Product {
     public void setImage(String image) {
         this.image = image;
     }
+
     public int getStock() {
         return stock;
     }
@@ -90,4 +85,24 @@ public class Product {
     public void setStock(int stock) {
         this.stock = stock;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "key='" + key + '\'' +
+                ", title='" + title + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", price='" + price + '\'' +
+                ", size='" + size + '\'' +
+                ", category='" + category + '\'' +
+                ", image='" + image + '\'' +
+                ", stock=" + stock +
+                '}';
+    }
+
+    public Product() {
+        // Required empty public constructor
+    }
+
+
 }

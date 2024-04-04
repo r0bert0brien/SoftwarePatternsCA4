@@ -22,7 +22,10 @@
     import android.widget.EditText;
     import android.widget.ImageButton;
     import android.widget.ImageView;
+    import android.widget.Spinner;
+    import android.widget.Toast;
 
+    import com.example.assignment4.Login;
     import com.example.assignment4.R;
     import com.example.assignment4.entity.Product;
     import com.google.firebase.database.DataSnapshot;
@@ -35,6 +38,8 @@
     import com.squareup.picasso.Picasso;
 
     import java.util.ArrayList;
+    import java.util.List;
+
     public class AddStock extends Fragment {
 
         private static final int PICK_IMAGE_REQUEST = 0;
@@ -44,6 +49,7 @@
         AutoCompleteTextView category;
         ImageView imageView;
         Button chooseImage, addStock;
+        Spinner size;
         ArrayAdapter<String> arrayAdapter;
         ArrayList<String> productCategories = new ArrayList<>();
         public AddStock(String email){
@@ -64,6 +70,7 @@
             View view = inflater.inflate(R.layout.fragment_add_stock, container, false);
             populateCategorySuggestions();
             imageView = view.findViewById(R.id.imageView);
+            Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/rob-ca2.appspot.com/o/productImages%2Fshopping_cart_checkout_FILL0_wght400_GRAD0_opsz24.png?alt=media&token=be46ea99-7430-4427-af1c-dd2a2a6272bf").into(imageView);
             title = view.findViewById(R.id.title);
             manufacturer = view.findViewById(R.id.manufacturer);
             price = view.findViewById(R.id.price);
@@ -72,14 +79,29 @@
             category.setAdapter(arrayAdapter);
             chooseImage = view.findViewById(R.id.chooseImageButton);
             addStock = view.findViewById(R.id.addStock);
+            size = view.findViewById(R.id.size);
+
+            List<String> sizes = new ArrayList<>();
+            sizes.add("Size");
+            sizes.add("S");
+            sizes.add("M");
+            sizes.add("L");
+            sizes.add("XL");
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, sizes);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            size.setAdapter(adapter);
 
             addStock.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DatabaseReference newProductRef = databaseReference.child("product").push();
-                    newProductRef.setValue(new Product(newProductRef.getKey(),title.getText().toString().trim(),
-                            manufacturer.getText().toString().trim(), price.getText().toString().trim(), category.getText().toString().trim(), String.valueOf(downloadUrl), 0));
-                    clearAllFields();
+                    if (!title.getText().equals("") && !manufacturer.getText().equals("") && !price.getText().equals("") && !size.getSelectedItem().equals("Size") && !category.getText().equals("") && !downloadUrl.equals("")) {
+                        DatabaseReference newProductRef = databaseReference.child("product").push();
+                        newProductRef.setValue(new Product(newProductRef.getKey(), title.getText().toString().trim(),
+                                manufacturer.getText().toString().trim(), price.getText().toString().trim(), size.getSelectedItem().toString(), category.getText().toString().trim(), String.valueOf(downloadUrl), 0));
+                        clearAllFields();
+                    }else {
+                        Toast.makeText(requireContext(), "Error, please check all fields and try again", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -110,6 +132,8 @@
             manufacturer.setText("");
             price.setText("");
             category.setText("");
+            Picasso.get().load("https://firebasestorage.googleapis.com/v0/b/rob-ca2.appspot.com/o/productImages%2Fshopping_cart_checkout_FILL0_wght400_GRAD0_opsz24.png?alt=media&token=be46ea99-7430-4427-af1c-dd2a2a6272bf").into(imageView);
+            size.setSelection(0);
         }
 
         private void populateCategorySuggestions(){

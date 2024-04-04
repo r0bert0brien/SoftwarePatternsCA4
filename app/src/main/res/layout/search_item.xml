@@ -34,12 +34,22 @@
         android:layout_marginBottom="4dp"/>
 
     <TextView
-        android:id="@+id/text_price"
-        android:text="Price"
+        android:id="@+id/text_size"
+        android:text="Size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/imageView"
         android:layout_below="@id/text_manufacturer"
         android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/text_price"
+        android:text="Price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/imageView"
+        android:layout_below="@id/text_size"
+        android:textSize="14sp"/>
+
 
 </RelativeLayout>
