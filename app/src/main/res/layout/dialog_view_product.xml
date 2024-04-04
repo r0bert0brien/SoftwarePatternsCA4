@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/productImage"
@@ -99,10 +99,34 @@
         android:focusable="false"
         android:focusableInTouchMode="false" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewReviews"
+    <EditText
+        android:id="@+id/commentField"
         android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:maxLines="3"
+        android:visibility="gone"
+        android:hint="Leave a Comment"/>
+
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:id="@+id/submitReview"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        android:text="Submit Review"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Customer Reviews"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
 
 </LinearLayout>

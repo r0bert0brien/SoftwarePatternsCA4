@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.assignment4.R;
+import com.example.assignment4.adapter.ProductAdapter;
 import com.example.assignment4.entity.Order;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +34,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
     ProductAdapter productAdapter;
     RecyclerView recyclerView;
     Button checkoutButton;
+    Double subtotal;
     ArrayList<Product> cart = new ArrayList<Product>();
 
     public ViewCart(){
@@ -53,6 +55,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_cart, container, false);
         cart.clear();
+        populateCart();
         recyclerView = view.findViewById(R.id.recyclerView);
         checkoutButton = view.findViewById(R.id.checkoutButton);
         productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, this);
@@ -60,37 +63,14 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         productAdapter.setProducts(cart);
 
-        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    Product product = dataSnapshot.getValue(Product.class);
-                    cart.add(product);
-                }
-                Log.d(TAG, cart.toString());
-                productAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
         checkoutButton.setOnClickListener(v -> {
             for(Product product : cart){
                 databaseReference.child("product").child(product.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         int stock = snapshot.child("stock").getValue(Integer.class);
-                        int subtotal = Integer.parseInt(product.getPrice())*product.getStock();
-                        Log.d(TAG, "Ordered Quantity: "+String.valueOf(stock));
-                        stock = stock - 1;
+                        stock = stock - product.getStock();
                         databaseReference.child("product").child(product.getKey()).child("stock").setValue(stock);
-                        databaseReference.child("users").child(email).child("orders").push().setValue(new Order(cart, email, getCurrentDateTime(), String.valueOf(subtotal)));
-                        databaseReference.child("users").child(email).child("shoppingCart").removeValue();
-                        cart.clear();
-                        productAdapter.notifyDataSetChanged();
                     }
 
                     @Override
@@ -99,11 +79,38 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
                     }
                 });
             }
+            databaseReference.child("users").child(email).child("orders").push().setValue(new Order(cart, email, getCurrentDateTime(), String.valueOf(subtotal)));
+            databaseReference.child("users").child(email).child("shoppingCart").removeValue();
+            cart.clear();
+            productAdapter.notifyDataSetChanged();
+            checkoutButton.setText("Checkout");
         });
 
         return view;
     }
 
+    public void populateCart(){
+        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                subtotal = 0.0;
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Product product = dataSnapshot.getValue(Product.class);
+                    subtotal = subtotal + product.getStock()*Double.parseDouble(product.getPrice());
+                    Log.d(TAG, String.valueOf(product.getTitle()) + " Calculation: Ordered Amount = " + String.valueOf(product.getStock()) + "* Price €" + String.valueOf(product.getPrice()));
+                    cart.add(product);
+                }
+                Log.d(TAG, cart.toString());
+                productAdapter.notifyDataSetChanged();
+                checkoutButton.setText("Checkout Subtotal €"+String.valueOf(subtotal));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     public static String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date now = new Date();
@@ -114,20 +121,6 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
 
     @Override
     public void onCartUpdate() {
-        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                cart.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    Product product = dataSnapshot.getValue(Product.class);
-                    cart.add(product);
-                }
-                productAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        populateCart();
     }
 }

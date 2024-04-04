@@ -18,9 +18,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
-import com.example.assignment4.admin.ProductAdapterAdmin;
+import com.example.assignment4.adapter.ProductAdapterAdmin;
 import com.example.assignment4.R;
-import com.example.assignment4.customer.ProductAdapter;
+import com.example.assignment4.adapter.ProductAdapter;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

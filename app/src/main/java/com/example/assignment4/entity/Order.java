@@ -14,6 +14,10 @@ public class Order {
         this.date = date;
         this.subtotal = subtotal;
     }
+
+    public Order(){
+        // Required empty public constructor
+    }
     @Override
     public String toString() {
         return "Order{" +

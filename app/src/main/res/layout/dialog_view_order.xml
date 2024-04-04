@@ -1,0 +1,39 @@
+<!-- dialog_order_details.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/orderDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Title"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/orderSubtotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subtotal: €0.00"
+        android:textSize="16sp"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Items"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:paddingBottom="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
+</LinearLayout>

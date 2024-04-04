@@ -14,6 +14,7 @@ public class BottomNavigationCustomer extends AppCompatActivity {
 
     private ProductBrowse productBrowse;
     private ViewCart viewCart;
+    private MyOrders myOrders;
     String email;
 
     @Override
@@ -23,6 +24,7 @@ public class BottomNavigationCustomer extends AppCompatActivity {
         email = getIntent().getStringExtra("EMAIL");
         productBrowse = new ProductBrowse(email);
         viewCart = new ViewCart(email);
+        myOrders = new MyOrders(email);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -41,9 +43,9 @@ public class BottomNavigationCustomer extends AppCompatActivity {
                         selectedFragment = productBrowse;
                     } else if (item.getItemId() == R.id.view_cart) {
                         selectedFragment = viewCart;
-                    } /*else if (item.getItemId() == R.id.navigation_view_profile) {
-                        selectedFragment = profileFragment;
-                    }*/
+                    } else if (item.getItemId() == R.id.my_orders) {
+                        selectedFragment = myOrders;
+                    }
 
                     if (selectedFragment != null) {
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
