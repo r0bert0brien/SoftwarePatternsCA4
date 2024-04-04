@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.assignment4.R;
 import com.example.assignment4.adapter.ProductAdapter;
@@ -34,6 +35,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
     ProductAdapter productAdapter;
     RecyclerView recyclerView;
     Button checkoutButton;
+    TextView discountPresent;
     Double subtotal;
     ArrayList<Product> cart = new ArrayList<Product>();
 
@@ -55,14 +57,13 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_cart, container, false);
         cart.clear();
-        populateCart();
         recyclerView = view.findViewById(R.id.recyclerView);
         checkoutButton = view.findViewById(R.id.checkoutButton);
+        discountPresent = view.findViewById(R.id.discountPresent);
         productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
         recyclerView.setAdapter(productAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        productAdapter.setProducts(cart);
-
+        populateCart();
         checkoutButton.setOnClickListener(v -> {
             for(Product product : cart){
                 databaseReference.child("product").child(product.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -96,13 +97,50 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
                 subtotal = 0.0;
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Product product = dataSnapshot.getValue(Product.class);
+                    product.setTitle(product.getTitle() + " x " + product.getStock());
                     subtotal = subtotal + product.getStock()*Double.parseDouble(product.getPrice());
                     Log.d(TAG, String.valueOf(product.getTitle()) + " Calculation: Ordered Amount = " + String.valueOf(product.getStock()) + "* Price €" + String.valueOf(product.getPrice()));
                     cart.add(product);
                 }
                 Log.d(TAG, cart.toString());
+                productAdapter.setProducts(cart);
                 productAdapter.notifyDataSetChanged();
                 checkoutButton.setText("Checkout Subtotal €"+String.valueOf(subtotal));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        databaseReference.child("discounts").child("repeatCustomers").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, snapshot.toString());
+                if (snapshot.exists()) {
+                        String count = snapshot.child("count").getValue(String.class);
+                        String discount = snapshot.child("discount").getValue(String.class);
+                        Log.d(TAG, "Discount: " + discount.toString());
+                        databaseReference.child("users").child(email).child("orders").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.getChildrenCount() >= Integer.parseInt(count)){
+                                    Double discountAmount = subtotal / 100 * Integer.parseInt(discount);
+                                    subtotal = subtotal - discountAmount;
+                                    discountPresent.setText("Discount Present! You Saved €" + String.valueOf(discountAmount) + " for being a Repeat Customer");
+                                    discountPresent.setVisibility(View.VISIBLE);
+                                    checkoutButton.setText("Checkout Subtotal €"+String.valueOf(subtotal));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                }
             }
 
             @Override

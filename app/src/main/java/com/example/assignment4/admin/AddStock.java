@@ -48,7 +48,7 @@
         EditText title, manufacturer, price;
         AutoCompleteTextView category;
         ImageView imageView;
-        Button chooseImage, addStock;
+        Button chooseImage, addStock, promotions;
         Spinner size;
         ArrayAdapter<String> arrayAdapter;
         ArrayList<String> productCategories = new ArrayList<>();
@@ -78,6 +78,7 @@
             arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, productCategories);
             category.setAdapter(arrayAdapter);
             chooseImage = view.findViewById(R.id.chooseImageButton);
+            promotions = view.findViewById(R.id.loyaltyDiscounts);
             addStock = view.findViewById(R.id.addStock);
             size = view.findViewById(R.id.size);
 
@@ -102,6 +103,46 @@
                     }else {
                         Toast.makeText(requireContext(), "Error, please check all fields and try again", Toast.LENGTH_SHORT).show();
                     }
+                }
+            });
+
+            promotions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Dialog dialog = new Dialog(requireContext());
+                    dialog.setContentView(R.layout.dialog_promotions);
+                    EditText count = dialog.findViewById(R.id.completed_count);
+                    EditText discount = dialog.findViewById(R.id.next_discount);
+                    Button save = dialog.findViewById(R.id.saveButton);
+                    Button clear = dialog.findViewById(R.id.clear);
+
+                    databaseReference.child("discounts").child("repeatCustomers").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()){
+                                count.setText(snapshot.child("count").getValue(String.class));
+                                discount.setText(snapshot.child("discount").getValue(String.class));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                    save.setOnClickListener(v1 -> {
+                        databaseReference.child("discounts").child("repeatCustomers").child("count").setValue(count.getText().toString());
+                        databaseReference.child("discounts").child("repeatCustomers").child("discount").setValue(discount.getText().toString());
+                        dialog.dismiss();
+                    });
+
+                    clear.setOnClickListener(v1 -> {
+                        databaseReference.child("discounts").child("repeatCustomers").removeValue();
+                        dialog.dismiss();
+                    });
+
+                    dialog.show();
                 }
             });
 

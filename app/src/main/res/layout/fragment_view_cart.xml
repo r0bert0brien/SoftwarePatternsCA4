@@ -22,6 +22,16 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/discountPresent"
+        android:text="Discount Applied"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:layout_gravity="center_horizontal"/>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

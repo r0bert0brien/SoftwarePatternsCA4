@@ -65,6 +65,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         View view = inflater.inflate(R.layout.fragment_product_browse, container, false);
         populateSuggestions();
         searchBar = view.findViewById(R.id.searchBar);
+        searchBar.setText("");
         searchButton = view.findViewById(R.id.searchButton);
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);

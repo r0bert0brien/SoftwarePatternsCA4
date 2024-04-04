@@ -15,6 +15,14 @@
         android:layout_marginBottom="20dp"
         android:text="Add Stock" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loyaltyDiscounts"
+        android:text="Promotion Maintenance"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

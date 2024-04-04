@@ -178,7 +178,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             manufacturer.setText(product.getManufacturer());
             price.setText("€" + product.getPrice());
             Log.d(TAG, product.getSize());
-            size.setText("Size:  d" + product.getSize().toString());
+            size.setText("Size:  " + product.getSize().toString().trim());
 
             addToCart.setOnClickListener(v1 -> {
                 if(!holder.inCart){
