@@ -19,7 +19,7 @@
             android:name=".customer.BottomNavigationCustomer"
             android:exported="false" />
         <activity
-            android:name=".Login"
+            android:name=".login.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

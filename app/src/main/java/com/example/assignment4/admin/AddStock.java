@@ -20,12 +20,10 @@
     import android.widget.AutoCompleteTextView;
     import android.widget.Button;
     import android.widget.EditText;
-    import android.widget.ImageButton;
     import android.widget.ImageView;
     import android.widget.Spinner;
     import android.widget.Toast;
 
-    import com.example.assignment4.Login;
     import com.example.assignment4.R;
     import com.example.assignment4.entity.Product;
     import com.google.firebase.database.DataSnapshot;
