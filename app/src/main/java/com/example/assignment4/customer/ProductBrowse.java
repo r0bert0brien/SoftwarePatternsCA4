@@ -2,11 +2,6 @@ package com.example.assignment4.customer;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,8 +13,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.assignment4.R;
 import com.example.assignment4.adapter.ProductAdapter;
+import com.example.assignment4.admin.CategoryObserver;
+import com.example.assignment4.admin.ManufacturerObserver;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,15 +30,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
-public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdateListener {
+public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdateListener, CategoryObserver, ManufacturerObserver, TitleObserver {
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
     String email;
-    Boolean isAdmin;
     AutoCompleteTextView searchBar;
     ImageButton searchButton;
     Spinner sortBy;
@@ -45,6 +45,10 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
     ArrayAdapter arrayAdapter;
     ArrayList<String> searchField = new ArrayList<>();
     ArrayList<Product> searchResults = new ArrayList<>();
+    List<CategoryObserver> categoryObservers = new ArrayList<>();
+    List<ManufacturerObserver> manufacturerObservers = new ArrayList<>();
+    List<TitleObserver> titleObservers = new ArrayList<>();
+
 
     public ProductBrowse(){
         // Required empty public constructor
@@ -63,6 +67,9 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_product_browse, container, false);
+        categoryObservers.add(this);
+        manufacturerObservers.add(this);
+        titleObservers.add(this);
         populateSuggestions();
         searchBar = view.findViewById(R.id.searchBar);
         searchBar.setText("");
@@ -70,22 +77,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
-        recyclerView.setAdapter(productAdapter);
-
-        arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, searchField);
-        searchBar.setAdapter(arrayAdapter);
-
-        List<String> paymentMethods = new ArrayList<>();
-        paymentMethods.add("Sort By");
-        paymentMethods.add("Title - Descending");
-        paymentMethods.add("Title - Ascending");
-        paymentMethods.add("Price - Descending");
-        paymentMethods.add("Price - Ascending");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, paymentMethods);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortBy.setAdapter(adapter);
+        setupAdapters();
 
         sortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -136,26 +128,40 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
 
         return view;
     }
-    private void populateSuggestions(){
+
+    //Method to Initialise and Assign the Relavent Array Adapters for the AutocompleteTextView ,RecyclerView and Spinner
+    private void setupAdapters(){
+        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
+        recyclerView.setAdapter(productAdapter);
+
+        arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, searchField);
+        searchBar.setAdapter(arrayAdapter);
+
+        List<String> sortTypes = Arrays.asList("Sort By", "Title - Descending", "Title - Ascending", "Price - Descending", "Price - Ascending");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, sortTypes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortBy.setAdapter(adapter);
+    }
+
+    //Pulling Unique Categories, Manufacturers and Titles from Firebase
+    private void populateSuggestions() {
         databaseReference.child("product").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                    for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                         String potentialCategory = dataSnapshot.child("category").getValue(String.class);
                         String potentialManufacturer = dataSnapshot.child("manufacturer").getValue(String.class);
                         String potentialTitle = dataSnapshot.child("title").getValue(String.class);
-                        Log.d(TAG, potentialCategory  + " " + potentialManufacturer + " " + potentialTitle);
-                        if (searchField != null) {
-                            if (!searchField.contains(potentialCategory)) {
-                                searchField.add(potentialCategory);
-                            }
-                            if (!searchField.contains(potentialManufacturer)) {
-                                searchField.add(potentialManufacturer);
-                            }
-                            if (!searchField.contains(potentialTitle)) {
-                                searchField.add(potentialTitle);
-                            }
+                        if (potentialCategory != null) {
+                            notifyCategoryObservers(potentialCategory);
+                        }
+                        if (potentialManufacturer != null) {
+                            notifyManufacturerObservers(potentialManufacturer);
+                        }
+                        if (potentialTitle != null) {
+                            notifyTitleObservers(potentialTitle);
                         }
                     }
                 }
@@ -166,45 +172,73 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         });
     }
 
+    //Depending on the Option Chosen in Spinner, a different set of functionality is preformed
     private void sortResults(String selectedOption) {
-        if (selectedOption.equals("Title - Descending")) {
-            Collections.sort(searchResults, new Comparator<Product>() {
-                @Override
-                public int compare(Product p1, Product p2) {
-                    return p1.getTitle().compareToIgnoreCase(p2.getTitle());
-                }
-            });
-        } else if (selectedOption.equals("Title - Ascending")) {
-            Collections.sort(searchResults, new Comparator<Product>() {
-                @Override
-                public int compare(Product p1, Product p2) {
-                    return p2.getTitle().compareToIgnoreCase(p1.getTitle());
-                }
-            });
-        } else if (selectedOption.equals("Price - Descending")) {
-            Collections.sort(searchResults, new Comparator<Product>() {
-                @Override
-                public int compare(Product p1, Product p2) {
-                    double price1 = Double.parseDouble(p1.getPrice());
-                    double price2 = Double.parseDouble(p2.getPrice());
-                    return Double.compare(price2, price1);
-                }
-            });
-        } else if (selectedOption.equals("Price - Ascending")) {
-            Collections.sort(searchResults, new Comparator<Product>() {
-                @Override
-                public int compare(Product p1, Product p2) {
-                    double price1 = Double.parseDouble(p1.getPrice());
-                    double price2 = Double.parseDouble(p2.getPrice());
-                    return Double.compare(price1, price2);
-                }
-            });
+        SortStrategy strategy = null;
+        if ("Title - Descending".equals(selectedOption)) {
+            strategy = new TitleDescendingSortStrategy();
+        } else if ("Title - Ascending".equals(selectedOption)) {
+            strategy = new TitleAscendingSortStrategy();
+        } else if ("Price - Descending".equals(selectedOption)) {
+            strategy = new PriceDescendingSortStrategy();
+        } else if ("Price - Ascending".equals(selectedOption)) {
+            strategy = new PriceAscendingSortStrategy();
         }
-        productAdapter.notifyDataSetChanged();
+        if (strategy != null) {
+            strategy.sort(searchResults);
+            productAdapter.notifyDataSetChanged();
+        }
     }
-
     @Override
     public void onCartUpdate() {
 
+    }
+
+    //Method to Notify all Category Observers
+    private void notifyCategoryObservers(String category) {
+        for (CategoryObserver observer : categoryObservers) {
+            observer.onCategoryAdded(category);
+        }
+    }
+
+    //Method to Notify all Manufacturer Observers
+    private void notifyManufacturerObservers(String manufacturer) {
+        for (ManufacturerObserver observer : manufacturerObservers) {
+            observer.onManufacturerAdded(manufacturer);
+        }
+    }
+
+    //Method to Notify all Title Observers
+    private void notifyTitleObservers(String title) {
+        for (TitleObserver observer : titleObservers) {
+            observer.onTitleAdded(title);
+        }
+    }
+
+    //When a Category is Added to the Array, update the RecyclerView
+    @Override
+    public void onCategoryAdded(String category) {
+        if (!searchField.contains(category)) {
+            searchField.add(category);
+            arrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //When a Manufacturer is Added to the Array, update the RecyclerView
+    @Override
+    public void onManufacturerAdded(String manufacturer) {
+        if (!searchField.contains(manufacturer)) {
+            searchField.add(manufacturer);
+            arrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //When a Title is Added to the Array, update the RecyclerView
+    @Override
+    public void onTitleAdded(String title) {
+        if (!searchField.contains(title)) {
+            searchField.add(title);
+            arrayAdapter.notifyDataSetChanged();
+        }
     }
 }

@@ -205,7 +205,6 @@ public class AddStock extends Fragment  implements CategoryObserver, Manufacture
                 if(snapshot.exists()){
                     for(DataSnapshot dataSnapshot : snapshot.getChildren()){
                         String potentialCategory = dataSnapshot.child("category").getValue(String.class);
-                        Log.d(TAG, potentialCategory);
                         if (potentialCategory != null) {
                             notifyCategoryObservers(potentialCategory);
                         }
