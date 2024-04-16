@@ -25,7 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
     private List<Review> reviewList;
     private Context context;
     public ReviewAdapter(List<Review> reviewList, Context context) {

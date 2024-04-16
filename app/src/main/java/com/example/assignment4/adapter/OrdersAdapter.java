@@ -20,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.List;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrdersViewHolder> {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
     private List<Order> orderList;
     private Context context;
     String email;
@@ -52,15 +51,13 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.OrdersView
             TextView orderDate = dialog.findViewById(R.id.orderDate);
             TextView orderSubtotal = dialog.findViewById(R.id.orderSubtotal);
 
-            ProductAdapter productAdapter = new ProductAdapter(order.getProducts(), context, order.getUserEmail(), isAdmin, null);
+            ProductAdapter productAdapter = new ProductAdapter(order.getProducts(), context, email, isAdmin, null);
             RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(productAdapter);
-            productAdapter.setProducts(order.getProducts());
-            productAdapter.notifyDataSetChanged();
 
-            orderDate.setText("Subtotal: " + holder.date.getText());
-            orderSubtotal.setText(holder.subtotal.getText());
+            orderDate.setText("Order Date: " + order.getDate());
+            orderSubtotal.setText("Subtotal: €" + order.getSubtotal());
 
             dialog.show();
         });

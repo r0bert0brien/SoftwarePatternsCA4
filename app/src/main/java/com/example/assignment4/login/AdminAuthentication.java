@@ -20,13 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 public class AdminAuthentication implements AuthenticationStrategy {
 
     private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
     private Context context;
 
-    public AdminAuthentication(Context context, FirebaseAuth mAuth, DatabaseReference databaseReference) {
+    public AdminAuthentication(Context context, FirebaseAuth mAuth) {
         this.context = context;
         this.mAuth = mAuth;
-        this.databaseReference = databaseReference;
     }
 
     @Override

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment4.R;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.Order;
 import com.example.assignment4.entity.Review;
 import com.example.assignment4.entity.User;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ReviewViewHolder> {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     private List<User> customerList;
     private Context context;
     public CustomerAdapter(List<User> customerList, Context context) {

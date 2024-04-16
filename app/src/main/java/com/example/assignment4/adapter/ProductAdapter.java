@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment4.R;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.Product;
 import com.example.assignment4.entity.Review;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public interface CartUpdateListener {
         void onCartUpdate();
     }
-    private final DatabaseReference databaseReference;
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     private final List<Product> productList;
     private final Context context;
     private final String email;
@@ -52,7 +53,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         this.email = email;
         this.isAdmin = isAdmin;
         this.cartUpdateListener = cartUpdateListener;
-        this.databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
     }
 
     @NonNull

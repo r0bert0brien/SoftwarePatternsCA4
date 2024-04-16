@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.assignment4.R;
 import com.example.assignment4.adapter.ProductAdapter;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.Order;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +31,7 @@ import java.util.Date;
 
 public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListener {
 
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     String email;
     ProductAdapter productAdapter;
     RecyclerView recyclerView;

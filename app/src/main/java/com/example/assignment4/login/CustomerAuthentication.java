@@ -20,13 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 public class CustomerAuthentication implements AuthenticationStrategy {
 
     private FirebaseAuth mAuth;
-    private DatabaseReference databaseReference;
     private Context context;
 
-    public CustomerAuthentication(Context context, FirebaseAuth mAuth, DatabaseReference databaseReference) {
+    public CustomerAuthentication(Context context, FirebaseAuth mAuth) {
         this.context = context;
         this.mAuth = mAuth;
-        this.databaseReference = databaseReference;
     }
 
     @Override

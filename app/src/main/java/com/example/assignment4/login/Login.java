@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.assignment4.R;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +32,7 @@ import java.util.List;
 
 public class Login extends AppCompatActivity {
 
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     FirebaseAuth mAuth;
     Button buttonLogin;
     EditText email, password;
@@ -60,10 +61,10 @@ public class Login extends AppCompatActivity {
                         if (dataSnapshot.exists()) {
                             boolean isAdmin = dataSnapshot.child("admin").getValue(Boolean.class);
                             if (isAdmin) {
-                                AuthenticationStrategy adminAuth = new AdminAuthentication(Login.this, mAuth, databaseReference);
+                                AuthenticationStrategy adminAuth = new AdminAuthentication(Login.this, mAuth);
                                 adminAuth.authenticate(emailValue, passwordValue);
                             } else {
-                                AuthenticationStrategy customerAuth = new CustomerAuthentication(Login.this, mAuth, databaseReference);
+                                AuthenticationStrategy customerAuth = new CustomerAuthentication(Login.this, mAuth);
                                 customerAuth.authenticate(emailValue, passwordValue);
                             }
                         } else {

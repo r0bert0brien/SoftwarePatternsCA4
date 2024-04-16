@@ -22,6 +22,7 @@ import com.example.assignment4.R;
 import com.example.assignment4.adapter.ProductAdapter;
 import com.example.assignment4.admin.CategoryObserver;
 import com.example.assignment4.admin.ManufacturerObserver;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +36,7 @@ import java.util.List;
 
 public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdateListener, CategoryObserver, ManufacturerObserver, TitleObserver {
 
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     String email;
     AutoCompleteTextView searchBar;
     ImageButton searchButton;

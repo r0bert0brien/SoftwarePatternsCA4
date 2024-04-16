@@ -26,6 +26,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.assignment4.R;
+import com.example.assignment4.entity.FirebaseSingleton;
 import com.example.assignment4.entity.Product;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,7 +44,7 @@ import java.util.List;
 public class AddStock extends Fragment  implements CategoryObserver, ManufacturerObserver {
 
     private static final int PICK_IMAGE_REQUEST = 0;
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://rob-ca2-default-rtdb.europe-west1.firebasedatabase.app/");
+    DatabaseReference databaseReference = FirebaseSingleton.getDatabaseReference();
     String email, downloadUrl;
     EditText title, price;
     AutoCompleteTextView manufacturer;
