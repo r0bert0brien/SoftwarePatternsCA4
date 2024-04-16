@@ -15,13 +15,14 @@ class TitleDescendingSortStrategy implements SortStrategy {
     @Override
     public void sort(List<Product> products) {
         Collections.sort(products, Comparator.comparing(Product::getTitle));
+        Collections.reverse(products);
     }
 }
 
 class TitleAscendingSortStrategy implements SortStrategy {
     @Override
     public void sort(List<Product> products) {
-        Collections.sort(products, (p1, p2) -> p2.getTitle().compareToIgnoreCase(p1.getTitle()));
+        Collections.sort(products, Comparator.comparing(Product::getTitle));
     }
 }
 

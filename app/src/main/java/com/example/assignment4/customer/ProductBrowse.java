@@ -43,6 +43,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
     RecyclerView recyclerView;
     ProductAdapter productAdapter;
     ArrayAdapter arrayAdapter;
+    Boolean isAdmin;
     ArrayList<String> searchField = new ArrayList<>();
     ArrayList<Product> searchResults = new ArrayList<>();
     List<CategoryObserver> categoryObservers = new ArrayList<>();
@@ -54,8 +55,9 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         // Required empty public constructor
     }
 
-    public ProductBrowse(String email){
+    public ProductBrowse(String email, Boolean isAdmin){
         this.email = email;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
         sortBy = view.findViewById(R.id.sortBy);
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        setupAdapters();
+        setupAdapters(isAdmin);
 
         sortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -130,9 +132,11 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
     }
 
     //Method to Initialise and Assign the Relavent Array Adapters for the AutocompleteTextView ,RecyclerView and Spinner
-    private void setupAdapters(){
-        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, false, this);
+    private void setupAdapters(Boolean isAdmin){
+        Log.d(TAG, isAdmin.toString());
+        productAdapter = new ProductAdapter(new ArrayList<>(), requireContext(), email, isAdmin, this);
         recyclerView.setAdapter(productAdapter);
+
 
         arrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, searchField);
         searchBar.setAdapter(arrayAdapter);

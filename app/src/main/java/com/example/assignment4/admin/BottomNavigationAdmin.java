@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.assignment4.R;
+import com.example.assignment4.customer.ProductBrowse;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class BottomNavigationAdmin extends AppCompatActivity {
     private AddStock addStock;
-    private ProductBrowseAdmin productBrowseAdmin;
+    private ProductBrowse productBrowse;
     private CustomerSearch customerSearch;
     String email;
 
@@ -24,7 +25,7 @@ public class BottomNavigationAdmin extends AppCompatActivity {
         setContentView(R.layout.bottom_nav_admin);
         email = getIntent().getStringExtra("EMAIL");
         addStock = new AddStock(email);
-        productBrowseAdmin = new ProductBrowseAdmin(email,true);
+        productBrowse = new ProductBrowse(email,true);
         customerSearch = new CustomerSearch(email);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
@@ -43,7 +44,7 @@ public class BottomNavigationAdmin extends AppCompatActivity {
                     if (item.getItemId() == R.id.navigation_add_stock) {
                         selectedFragment = addStock;
                     } if (item.getItemId() == R.id.navigation_product_maintenance) {
-                        selectedFragment = productBrowseAdmin;
+                        selectedFragment = productBrowse;
                     } else if (item.getItemId() == R.id.navigation_customer_search) {
                         selectedFragment = customerSearch;
                     }

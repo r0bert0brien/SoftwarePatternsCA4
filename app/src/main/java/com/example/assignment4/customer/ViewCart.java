@@ -91,13 +91,16 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
     }
 
     public void populateCart(){
-        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(email).child("shoppingCart").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 subtotal = 0.0;
+                cart.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     Product product = dataSnapshot.getValue(Product.class);
-                    product.setTitle(product.getTitle() + " x " + product.getStock());
+                    if (!product.getTitle().contains("x") || !product.getTitle().matches(".*\\d.*")) {
+                        product.setTitle(product.getTitle() + " x " + product.getStock());
+                    }
                     subtotal = subtotal + product.getStock()*Double.parseDouble(product.getPrice());
                     Log.d(TAG, String.valueOf(product.getTitle()) + " Calculation: Ordered Amount = " + String.valueOf(product.getStock()) + "* Price €" + String.valueOf(product.getPrice()));
                     cart.add(product);
@@ -110,7 +113,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Log.e(TAG, "Failed to read cart data.", error.toException());
             }
         });
 
@@ -159,6 +162,7 @@ public class ViewCart extends Fragment implements ProductAdapter.CartUpdateListe
 
     @Override
     public void onCartUpdate() {
+        Log.d(TAG, "PopulateCart being called");
         populateCart();
     }
 }

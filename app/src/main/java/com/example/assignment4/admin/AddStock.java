@@ -76,7 +76,6 @@ public class AddStock extends Fragment  implements CategoryObserver, Manufacture
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_stock, container, false);
-        setupAdapters();
         populateCategorySuggestions();
         populateManufacturerSuggestions();
         imageView = view.findViewById(R.id.imageView);
@@ -86,10 +85,12 @@ public class AddStock extends Fragment  implements CategoryObserver, Manufacture
         title = view.findViewById(R.id.title);
         price = view.findViewById(R.id.price);
         category = view.findViewById(R.id.category);
+        manufacturer = view.findViewById(R.id.manufacturer);
         chooseImage = view.findViewById(R.id.chooseImageButton);
         promotions = view.findViewById(R.id.loyaltyDiscounts);
         addStock = view.findViewById(R.id.addStock);
         size = view.findViewById(R.id.size);
+        setupAdapters();
 
         addStock.setOnClickListener(new View.OnClickListener() {
             @Override

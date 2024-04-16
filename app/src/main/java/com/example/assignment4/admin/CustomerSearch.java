@@ -16,13 +16,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 
 import com.example.assignment4.adapter.CustomerAdapter;
-import com.example.assignment4.adapter.ProductAdapterAdmin;
 import com.example.assignment4.R;
-import com.example.assignment4.adapter.ProductAdapter;
-import com.example.assignment4.entity.Product;
 import com.example.assignment4.entity.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,9 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class CustomerSearch extends Fragment {
 

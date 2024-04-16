@@ -63,161 +63,213 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
+        Log.d(TAG, "isAdmin Status: " + isAdmin.toString());
         Product product = productList.get(position);
-        holder.title.setText(product.getTitle());
-        holder.manufacturer.setText(product.getManufacturer());
-        holder.price.setText("€" + product.getPrice());
-        holder.size.setText("Size: " + product.getSize());
-        Picasso.get().load(product.getImage()).into(holder.imageView);
+        Log.d(TAG, "Product Size: " + product.toString());
+        if(isAdmin){
+            Log.d(TAG, "Choosing is Admin");
+            holder.title.setText(product.getTitle());
+            holder.manufacturer.setText(product.getManufacturer());
+            holder.price.setText("€" + product.getPrice());
+            holder.size.setText("Size: " + product.getSize());
+            Picasso.get().load(product.getImage()).into(holder.imageView);
 
-        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot productSnapshot : snapshot.getChildren()) {
-                        String productKey = productSnapshot.child("key").getValue(String.class);
-                        if (product.getKey().equalsIgnoreCase(productKey)) {
-                            holder.inCart = true;
-                            break;
-                        }else{
-                            holder.inCart = false;
-                        }
-                    }
-                    Log.d(TAG, "InCart Status: " + holder.inCart.toString());
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+            holder.imageView.setOnClickListener(v -> {
+                Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_view_product_admin);
+                ImageView imageView = dialog.findViewById(R.id.productImage);
+                TextView title = dialog.findViewById(R.id.productTitle);
+                TextView size = dialog.findViewById(R.id.productSize);
+                TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
+                EditText price = dialog.findViewById(R.id.productPrice);
+                EditText stock = dialog.findViewById(R.id.productStock);
+                Button save = dialog.findViewById(R.id.saveButton);
+                RatingBar rating = dialog.findViewById(R.id.productRating);
 
-        holder.imageView.setOnClickListener(v -> {
-            Dialog dialog = new Dialog(context);
-            dialog.setContentView(R.layout.dialog_view_product);
+                ArrayList<Review> reviews = new ArrayList<>();
+                RecyclerView recyclerViewReviews = dialog.findViewById(R.id.recyclerViewReviews);
+                ReviewAdapter reviewAdapter = new ReviewAdapter(reviews, context);
+                recyclerViewReviews.setAdapter(reviewAdapter);
+                recyclerViewReviews.setLayoutManager(new LinearLayoutManager(context));
+                reviewAdapter.setReviews(reviews);
 
-            ArrayList<Review> reviews = new ArrayList<>();
-            RecyclerView recyclerViewReviews = dialog.findViewById(R.id.recyclerViewReviews);
-            ReviewAdapter reviewAdapter = new ReviewAdapter(reviews, context);
-            recyclerViewReviews.setAdapter(reviewAdapter);
-            recyclerViewReviews.setLayoutManager(new LinearLayoutManager(context));
-            reviewAdapter.setReviews(reviews);
+                populateReviews(product, reviews, rating, reviewAdapter);
 
-            ImageView imageView = dialog.findViewById(R.id.productImage);
-            TextView title = dialog.findViewById(R.id.productTitle);
-            TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
-            TextView size = dialog.findViewById(R.id.productSize);
-            TextView price = dialog.findViewById(R.id.productPrice);
-            Button increment = dialog.findViewById(R.id.incrementButton);
-            Button decrement = dialog.findViewById(R.id.decrementButton);
-            TextView quantity = dialog.findViewById(R.id.quantityTextView);
-            Button addToCart = dialog.findViewById(R.id.addToCart);
-            RatingBar rating = dialog.findViewById(R.id.productRating);
-            EditText comments = dialog.findViewById(R.id.commentField);
-            Button submitReview = dialog.findViewById(R.id.submitReview);
-            Log.d(TAG, "isAdmin status: " + isAdmin.toString());
-            populateReviews(product, reviews, rating, reviewAdapter);
+                Picasso.get().load(product.getImage()).into(imageView);
+                title.setText(product.getTitle());
+                manufacturer.setText(product.getManufacturer());
+                price.setText("€" + product.getPrice());
+                size.setText("Size: " + product.getSize().toString());
+                stock.setText(String.valueOf(product.getStock()));
 
-            if (cartUpdateListener == null && !isAdmin){
-                addToCart.setVisibility(View.GONE);
-                increment.setVisibility(View.GONE);
-                decrement.setVisibility(View.GONE);
-                quantity.setVisibility(View.GONE);
-                rating.setClickable(true);
-                rating.setIsIndicator(false);
-                rating.setFocusable(true);
-            }else {
-                if(holder.inCart || isAdmin) {
-                    if(!isAdmin){
-                        addToCart.setText("Remove From Cart");
-                    }
-                    increment.setVisibility(View.GONE);
-                    decrement.setVisibility(View.GONE);
-                    quantity.setVisibility(View.GONE);
-                }else {
-                    addToCart.setText("Add To Cart");
-                    increment.setVisibility(View.VISIBLE);
-                    decrement.setVisibility(View.VISIBLE);
-                    quantity.setVisibility(View.VISIBLE);
-                }
-
-                increment.setOnClickListener(v1 -> {
-                    int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
-                    quantityAmount++;
-                    if (quantityAmount <= product.getStock()){
-                        quantity.setText(String.valueOf(quantityAmount));
-                    }
+                save.setOnClickListener(v1 -> {
+                    product.setPrice(price.getText().toString().replace("€", "").trim());
+                    product.setStock(Integer.parseInt(String.valueOf(stock.getText())));
+                    databaseReference.child("product").child(product.getKey()).setValue(product);
+                    notifyItemChanged(position);
+                    dialog.dismiss();
                 });
-
-                decrement.setOnClickListener(v1 -> {
-                    int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
-                    quantityAmount--;
-                    if(quantityAmount >= 1) {
-                        quantity.setText(String.valueOf(quantityAmount));
-                    }else{
-                        quantityAmount = 1;
-                    }
-                });
-            }
-
-            rating.setOnRatingBarChangeListener((ratingBar, ratingValue, fromUser) -> {
-                if (fromUser) {
-                    submitReview.setVisibility(View.VISIBLE);
-                    comments.setVisibility(View.VISIBLE);
-                    submitReview.setOnClickListener(v1 -> {
-                        databaseReference.child("product").child(product.getKey()).child("reviews").child(email).setValue(new Review(comments.getText().toString(), ratingValue, email));
-                        comments.setText("");
-                        comments.setVisibility(View.GONE);
-                        submitReview.setVisibility(View.GONE);
-                        populateReviews(product, reviews, rating, reviewAdapter);
-                    });
-                }
+                dialog.show();
             });
+        }else {
+            Log.d(TAG, "Choosing Isn't Admin!");
+            holder.title.setText(product.getTitle());
+            holder.manufacturer.setText(product.getManufacturer());
+            holder.price.setText("€" + product.getPrice());
+            holder.size.setText("Size: " + product.getSize());
+            Picasso.get().load(product.getImage()).into(holder.imageView);
 
-            Picasso.get().load(product.getImage()).into(imageView);
-            title.setText(product.getTitle());
-            manufacturer.setText(product.getManufacturer());
-            price.setText("€" + product.getPrice());
-            Log.d(TAG, product.getSize());
-            size.setText("Size:  " + product.getSize().toString().trim());
-
-            addToCart.setOnClickListener(v1 -> {
-                if(!holder.inCart){
-                    if (Integer.parseInt(String.valueOf(quantity.getText())) > product.getStock()){
-                        Toast.makeText(context, "Error, maximum quantity exceeded - max quantity is: " + String.valueOf(product.getStock()), Toast.LENGTH_SHORT).show();
-                    }else{
-                    addToCart.setText("Remove From Cart");
-                    product.setStock(Integer.parseInt(String.valueOf(quantity.getText())));
-                    databaseReference.child("users").child(email).child("shoppingCart").push().setValue(product);
-                    holder.inCart = true;
-                    increment.setVisibility(View.GONE);
-                    decrement.setVisibility(View.GONE);
-                    quantity.setVisibility(View.GONE);
-                }
-                }else {
-                    addToCart.setText("Add To Cart");
-                    databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                Product cartProduct = dataSnapshot.getValue(Product.class);
-                                if (cartProduct.getKey().equals(product.getKey())) {
-                                    dataSnapshot.getRef().removeValue();
-                                    break;
-                                }
+            databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for (DataSnapshot productSnapshot : snapshot.getChildren()) {
+                            String productKey = productSnapshot.child("key").getValue(String.class);
+                            if (product.getKey().equalsIgnoreCase(productKey)) {
+                                holder.inCart = true;
+                                break;
+                            } else {
+                                holder.inCart = false;
                             }
                         }
+                        Log.d(TAG, "InCart Status: " + holder.inCart.toString());
+                    }
+                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                    holder.inCart = false;
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
                 }
             });
 
-            dialog.show();
-        });
+            holder.imageView.setOnClickListener(v -> {
+                Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_view_product);
+
+                ArrayList<Review> reviews = new ArrayList<>();
+                RecyclerView recyclerViewReviews = dialog.findViewById(R.id.recyclerViewReviews);
+                ReviewAdapter reviewAdapter = new ReviewAdapter(reviews, context);
+                recyclerViewReviews.setAdapter(reviewAdapter);
+                recyclerViewReviews.setLayoutManager(new LinearLayoutManager(context));
+                reviewAdapter.setReviews(reviews);
+
+                ImageView imageView = dialog.findViewById(R.id.productImage);
+                TextView title = dialog.findViewById(R.id.productTitle);
+                TextView manufacturer = dialog.findViewById(R.id.productManufacturer);
+                TextView size = dialog.findViewById(R.id.productSize);
+                TextView price = dialog.findViewById(R.id.productPrice);
+                Button increment = dialog.findViewById(R.id.incrementButton);
+                Button decrement = dialog.findViewById(R.id.decrementButton);
+                TextView quantity = dialog.findViewById(R.id.quantityTextView);
+                Button addToCart = dialog.findViewById(R.id.addToCart);
+                RatingBar rating = dialog.findViewById(R.id.productRating);
+                EditText comments = dialog.findViewById(R.id.commentField);
+                Button submitReview = dialog.findViewById(R.id.submitReview);
+                Log.d(TAG, "isAdmin status: " + isAdmin.toString());
+                populateReviews(product, reviews, rating, reviewAdapter);
+
+                if (cartUpdateListener == null && !isAdmin) {
+                    addToCart.setVisibility(View.GONE);
+                    increment.setVisibility(View.GONE);
+                    decrement.setVisibility(View.GONE);
+                    quantity.setVisibility(View.GONE);
+                    rating.setClickable(true);
+                    rating.setIsIndicator(false);
+                    rating.setFocusable(true);
+                } else {
+                    if (holder.inCart || isAdmin) {
+                        if (!isAdmin) {
+                            addToCart.setText("Remove From Cart");
+                        }
+                        increment.setVisibility(View.GONE);
+                        decrement.setVisibility(View.GONE);
+                        quantity.setVisibility(View.GONE);
+                    } else {
+                        addToCart.setText("Add To Cart");
+                        increment.setVisibility(View.VISIBLE);
+                        decrement.setVisibility(View.VISIBLE);
+                        quantity.setVisibility(View.VISIBLE);
+                    }
+
+                    increment.setOnClickListener(v1 -> {
+                        int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
+                        quantityAmount++;
+                        if (quantityAmount <= product.getStock()) {
+                            quantity.setText(String.valueOf(quantityAmount));
+                        }
+                    });
+
+                    decrement.setOnClickListener(v1 -> {
+                        int quantityAmount = Integer.parseInt(String.valueOf(quantity.getText()));
+                        quantityAmount--;
+                        if (quantityAmount >= 1) {
+                            quantity.setText(String.valueOf(quantityAmount));
+                        } else {
+                            quantityAmount = 1;
+                        }
+                    });
+                }
+
+                rating.setOnRatingBarChangeListener((ratingBar, ratingValue, fromUser) -> {
+                    if (fromUser) {
+                        submitReview.setVisibility(View.VISIBLE);
+                        comments.setVisibility(View.VISIBLE);
+                        submitReview.setOnClickListener(v1 -> {
+                            databaseReference.child("product").child(product.getKey()).child("reviews").child(email).setValue(new Review(comments.getText().toString(), ratingValue, email));
+                            comments.setText("");
+                            comments.setVisibility(View.GONE);
+                            submitReview.setVisibility(View.GONE);
+                            populateReviews(product, reviews, rating, reviewAdapter);
+                        });
+                    }
+                });
+
+                Picasso.get().load(product.getImage()).into(imageView);
+                title.setText(product.getTitle());
+                manufacturer.setText(product.getManufacturer());
+                price.setText("€" + product.getPrice());
+                Log.d(TAG, product.getSize());
+                size.setText("Size:  " + product.getSize().toString().trim());
+
+                addToCart.setOnClickListener(v1 -> {
+                    if (!holder.inCart) {
+                        if (Integer.parseInt(String.valueOf(quantity.getText())) > product.getStock()) {
+                            Toast.makeText(context, "Error, maximum quantity exceeded - max quantity is: " + String.valueOf(product.getStock()), Toast.LENGTH_SHORT).show();
+                        } else {
+                            addToCart.setText("Remove From Cart");
+                            product.setStock(Integer.parseInt(String.valueOf(quantity.getText())));
+                            databaseReference.child("users").child(email).child("shoppingCart").push().setValue(product);
+                            holder.inCart = true;
+                            increment.setVisibility(View.GONE);
+                            decrement.setVisibility(View.GONE);
+                            quantity.setVisibility(View.GONE);
+                        }
+                    } else {
+                        addToCart.setText("Add To Cart");
+                        databaseReference.child("users").child(email).child("shoppingCart").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    Product cartProduct = dataSnapshot.getValue(Product.class);
+                                    if (cartProduct.getKey().equals(product.getKey())) {
+                                        dataSnapshot.getRef().removeValue();
+                                        break;
+                                    }
+                                }
+                                cartUpdateListener.onCartUpdate();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                        holder.inCart = false;
+                    }
+                });
+
+                dialog.show();
+            });
+        }
     }
 
     public void populateReviews(Product product, ArrayList<Review> reviews, RatingBar rating, ReviewAdapter reviewAdapter){
@@ -257,7 +309,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
     public void setProducts(List<Product> products) {
-        this.productList = products;
+        this.productList.clear();
+        this.productList.addAll(products);
+        notifyDataSetChanged();
     }
 
     public class ProductViewHolder extends RecyclerView.ViewHolder {

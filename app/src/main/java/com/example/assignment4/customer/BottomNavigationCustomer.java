@@ -22,7 +22,7 @@ public class BottomNavigationCustomer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bottom_nav_customer);
         email = getIntent().getStringExtra("EMAIL");
-        productBrowse = new ProductBrowse(email);
+        productBrowse = new ProductBrowse(email, false);
         viewCart = new ViewCart(email);
         myOrders = new MyOrders(email);
 
