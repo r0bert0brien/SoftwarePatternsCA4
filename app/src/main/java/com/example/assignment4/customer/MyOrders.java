@@ -2,11 +2,6 @@ package com.example.assignment4.customer;
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +10,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment4.R;
 import com.example.assignment4.adapter.OrdersAdapter;
@@ -26,8 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 public class MyOrders extends Fragment {
@@ -38,6 +37,7 @@ public class MyOrders extends Fragment {
     RecyclerView recyclerView;
     OrdersAdapter ordersAdapter;
     ArrayList<Order> orders = new ArrayList<>();
+    OrderSortingStrategy sortingStrategy;
 
     public MyOrders(){
         // Required empty public constructor
@@ -64,14 +64,16 @@ public class MyOrders extends Fragment {
         recyclerView.setAdapter(ordersAdapter);
 
         populateRecyclerView();
-        List<String> paymentMethods = new ArrayList<>();
-        paymentMethods.add("Sort By");
-        paymentMethods.add("Date - Descending");
-        paymentMethods.add("Date - Ascending");
-        paymentMethods.add("Price - Descending");
-        paymentMethods.add("Price - Ascending");
+        setupSortingSpinner();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, paymentMethods);
+        return view;
+    }
+
+    //Contains all sorting functionality
+    private void setupSortingSpinner() {
+        List<String> sortTypes = Arrays.asList("Sort By", "Date - Descending", "Date - Ascending", "Price - Descending", "Price - Ascending");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, sortTypes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortBy.setAdapter(adapter);
 
@@ -79,7 +81,7 @@ public class MyOrders extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedOption = (String) parent.getItemAtPosition(position);
-                sortResults(selectedOption);
+                setSortingStrategy(selectedOption);
             }
 
             @Override
@@ -87,10 +89,26 @@ public class MyOrders extends Fragment {
 
             }
         });
-
-        return view;
     }
 
+    //Depending on the Option Chosen in Spinner, a different set of functionality is preformed
+    private void setSortingStrategy(String selectedOption) {
+        if ("Date - Descending".equals(selectedOption)) {
+            sortingStrategy = new DateDescendingSortingStrategy();
+        } else if ("Date - Ascending".equals(selectedOption)) {
+            sortingStrategy = new DateAscendingSortingStrategy();
+        } else if ("Price - Descending".equals(selectedOption)) {
+            sortingStrategy = new PriceDescendingSortingStrategy();
+        } else if ("Price - Ascending".equals(selectedOption)) {
+            sortingStrategy = new PriceAscendingSortingStrategy();
+        }
+        if (sortingStrategy != null) {
+            sortingStrategy.sort(orders);
+            ordersAdapter.notifyDataSetChanged();
+        }
+    }
+
+    //Retrieves all of the User's Orders
     public void populateRecyclerView(){
         databaseReference.child("users").child(email).child("orders").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -110,42 +128,5 @@ public class MyOrders extends Fragment {
 
             }
         });
-    }
-
-    private void sortResults(String selectedOption) {
-        if (selectedOption.equals("Date - Descending")) {
-            Collections.sort(orders, new Comparator<Order>() {
-                @Override
-                public int compare(Order o1, Order o2) {
-                    return o1.getDate().compareToIgnoreCase(o2.getDate());
-                }
-            });
-        } else if (selectedOption.equals("Date - Ascending")) {
-            Collections.sort(orders, new Comparator<Order>() {
-                @Override
-                public int compare(Order o1, Order o2) {
-                    return o2.getDate().compareToIgnoreCase(o1.getDate());
-                }
-            });
-        } else if (selectedOption.equals("Price - Descending")) {
-            Collections.sort(orders, new Comparator<Order>() {
-                @Override
-                public int compare(Order o1, Order o2) {
-                    double price1 = Double.parseDouble(o1.getSubtotal());
-                    double price2 = Double.parseDouble(o2.getSubtotal());
-                    return Double.compare(price2, price1);
-                }
-            });
-        } else if (selectedOption.equals("Price - Ascending")) {
-            Collections.sort(orders, new Comparator<Order>() {
-                @Override
-                public int compare(Order o1, Order o2) {
-                    double price1 = Double.parseDouble(o1.getSubtotal());
-                    double price2 = Double.parseDouble(o2.getSubtotal());
-                    return Double.compare(price1, price2);
-                }
-            });
-        }
-        ordersAdapter.notifyDataSetChanged();
     }
 }

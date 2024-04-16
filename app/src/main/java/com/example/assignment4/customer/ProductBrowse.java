@@ -178,15 +178,15 @@ public class ProductBrowse extends Fragment implements ProductAdapter.CartUpdate
 
     //Depending on the Option Chosen in Spinner, a different set of functionality is preformed
     private void sortResults(String selectedOption) {
-        SortStrategy strategy = null;
+        ProductSortStrategy strategy = null;
         if ("Title - Descending".equals(selectedOption)) {
-            strategy = new TitleDescendingSortStrategy();
+            strategy = new TitleDescendingProductSortStrategy();
         } else if ("Title - Ascending".equals(selectedOption)) {
-            strategy = new TitleAscendingSortStrategy();
+            strategy = new TitleAscendingProductSortStrategy();
         } else if ("Price - Descending".equals(selectedOption)) {
-            strategy = new PriceDescendingSortStrategy();
+            strategy = new PriceDescendingProductSortStrategy();
         } else if ("Price - Ascending".equals(selectedOption)) {
-            strategy = new PriceAscendingSortStrategy();
+            strategy = new PriceAscendingProductSortStrategy();
         }
         if (strategy != null) {
             strategy.sort(searchResults);
